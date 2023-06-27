@@ -6,12 +6,14 @@ on:
     paths:
       - "**.go"
       - "go.mod"
+      - ".github/workflows/*.yml"
   pull_request:
     branches:
       - "**"
     paths:
       - "**.go"
       - "go.mod"
+      - ".github/workflows/*.yml"
 
 jobs:
   test:
@@ -30,7 +32,7 @@ jobs:
         run: go install
 
       - name: Test code
-        run: go test -race -coverprofile="coverage.txt" -covermode=atomic github.com/michimani/evidently-local/... -shuffle=on
+        run: go test -race -coverprofile="coverage.txt" -covermode=atomic github.com/michimani/evidentlylocal/... -shuffle=on
 
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v2
