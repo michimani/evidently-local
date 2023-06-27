@@ -1,4 +1,4 @@
-module michimani/evidentlylocal
+module github.com/michimani/evidentlylocal
 
 go 1.20
 

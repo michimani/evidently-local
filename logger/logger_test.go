@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"michimani/evidentlylocal/logger"
 	"os"
 	"testing"
+
+	"github.com/michimani/evidentlylocal/logger"
 
 	"github.com/stretchr/testify/assert"
 )
