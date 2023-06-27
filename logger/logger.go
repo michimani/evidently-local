@@ -9,13 +9,15 @@ import (
 
 type Logger interface {
 	Info(msg string)
-	Error(msg string)
+	Error(msg string, err error)
 	Warn(msg string)
 }
 
 type ELLogger struct {
 	logger *zerolog.Logger
 }
+
+var _ Logger = (*ELLogger)(nil)
 
 const serviceName = "evidently-local"
 
