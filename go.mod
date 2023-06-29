@@ -3,6 +3,7 @@ module github.com/michimani/evidentlylocal
 go 1.20
 
 require (
+	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/rs/zerolog v1.29.1
 	github.com/stretchr/testify v1.8.4
 )

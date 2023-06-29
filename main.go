@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/michimani/evidentlylocal/handler"
 	"github.com/michimani/evidentlylocal/logger"
 )
 
@@ -14,9 +15,7 @@ const (
 )
 
 func startServer(port string, l logger.Logger) {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("Hello, world!"))
-	})
+	http.HandleFunc("/projects/", handler.Projects)
 
 	l.Info(fmt.Sprintf("Server started on port %s", port))
 	err := http.ListenAndServe(":"+port, nil)
