@@ -33,6 +33,12 @@ func main() {
 	}
 
 	entityID := uuid.String()
+
+	args := os.Args
+	if len(args) > 1 {
+		entityID = args[1]
+	}
+
 	evaluateFeature(client, project, feature, entityID)
 }
 
@@ -47,6 +53,7 @@ func evaluateFeature(client *evidently.Client, project, feature, entityID string
 		panic(err)
 	}
 
+	fmt.Printf("EntityID: %s\n", entityID)
 	fmt.Printf("Reason: %s\n", aws.ToString(out.Reason))
 	fmt.Printf("Variation: %s\n", aws.ToString(out.Variation))
 	fmt.Printf("Type of Value: %s\n", reflect.TypeOf(out.Value))

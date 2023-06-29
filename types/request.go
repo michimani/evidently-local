@@ -1,6 +1,6 @@
 package types
 
-type evaluateFeatureRequest struct {
+type EvaluateFeatureRequest struct {
 	EntityID        string `json:"entityId"`
 	EvaluateContext string `json:"evaluateContext"`
 }

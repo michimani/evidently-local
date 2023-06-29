@@ -10,10 +10,3 @@ type EvaluateFeatureResponse struct {
 type VariableValue map[VariableValueType]any
 
 type VariableValueType string
-
-const (
-	VariableValueTypeString VariableValueType = "stringValue"
-	VariableValueTypeBool   VariableValueType = "boolValue"
-	VariableValueTypeLong   VariableValueType = "longValue"
-	VariableValueTypeDouble VariableValueType = "doubleValue"
-)

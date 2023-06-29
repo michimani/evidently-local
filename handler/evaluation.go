@@ -2,13 +2,20 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gofrs/uuid"
 
+	"github.com/michimani/evidentlylocal/components"
 	"github.com/michimani/evidentlylocal/logger"
+	"github.com/michimani/evidentlylocal/repository"
 	"github.com/michimani/evidentlylocal/types"
+)
+
+const (
+	dataDir = "data"
 )
 
 func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
@@ -28,17 +35,47 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	}
 
 	project := parts[2]
-	feature := parts[4]
-	l.Info("Project: " + project)
-	l.Info("Feature: " + feature)
+	featureName := parts[4]
+
+	fRepo, err := repository.NewFeatureRepositoryWithJSONFile(dataDir, l)
+	if err != nil {
+		l.Error("Failed to create repository", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	feature, err := fRepo.Get(project, featureName)
+	if err != nil {
+		l.Error("Failed to get feature", err)
+		http.Error(w, "Resource Not Found", http.StatusNotFound)
+		return
+	}
+
+	// TODO: get entityID from request body
+	request := &types.EvaluateFeatureRequest{}
+	err = json.NewDecoder(r.Body).Decode(request)
+	if err != nil {
+		l.Error("Failed to decode request body", err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	entityID := request.EntityID
+
+	reason, variation, err := components.EvaluateFeature(feature, entityID)
+	if err != nil {
+		l.Error("Failed to evaluate feature", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	l.Info(fmt.Sprintf("return variation: %+v", variation))
 
 	res := types.EvaluateFeatureResponse{
-		Details: "{}",
-		Reason:  "DEFAULT-local",
-		Value: types.VariableValue{
-			types.VariableValueTypeBool: false,
-		},
-		Variation: "False",
+		Details:   "{}",
+		Reason:    reason,
+		Value:     variation.Value,
+		Variation: variation.Name,
 	}
 
 	bytes, err := json.Marshal(res)
