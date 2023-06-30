@@ -5,7 +5,7 @@ import (
 	"github.com/michimani/evidentlylocal/types"
 )
 
-func EvaluateFeature(feature *models.Feature, entityID string) (string, models.Variation, error) {
+func EvaluateFeature(feature *models.Feature, entityID string) (string, *models.Variation, error) {
 	// check override rules
 	for overrideEntityID, overrideVariationName := range feature.EntityOverrides {
 		if overrideEntityID == entityID {
@@ -17,7 +17,7 @@ func EvaluateFeature(feature *models.Feature, entityID string) (string, models.V
 					feature.VariableValueType(): value,
 				},
 			}
-			return "OVERRIDE_RULE (local)", v, nil
+			return "OVERRIDE_RULE (local)", &v, nil
 		}
 	}
 
@@ -31,5 +31,5 @@ func EvaluateFeature(feature *models.Feature, entityID string) (string, models.V
 		},
 	}
 
-	return "DEFAULT (local)", v, nil
+	return "DEFAULT (local)", &v, nil
 }
