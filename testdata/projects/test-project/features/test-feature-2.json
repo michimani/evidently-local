@@ -1,0 +1,24 @@
+{
+  "defaultVariation": "String1",
+  "entityOverrides": {
+    "force-2": "String2"
+  },
+  "name": "test-feature-2",
+  "project": "test-project",
+  "status": "AVAILABLE",
+  "valueType": "STRING",
+  "variations": [
+    {
+      "name": "String1",
+      "value": {
+        "stringValue": "string-1"
+      }
+    },
+    {
+      "name": "String2",
+      "value": {
+        "stringValue": "string-2"
+      }
+    }
+  ]
+}
