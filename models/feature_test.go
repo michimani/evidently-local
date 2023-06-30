@@ -159,3 +159,108 @@ func Test_Feature_GetValue(t *testing.T) {
 		})
 	}
 }
+
+func Test_Feature_GetDefaultValue(t *testing.T) {
+	cases := []struct {
+		name    string
+		feature *models.Feature
+		expect  any
+	}{
+		{
+			name: "string value",
+			feature: &models.Feature{
+				ValueType:        types.FeatureValueTypeString,
+				DefaultVariation: "string-value-1",
+				Variations: []models.Variation{
+					{
+						Name: "string-value-1",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeString: "string-value-1",
+						},
+					},
+					{
+						Name: "string-value-2",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeString: "string-value-2",
+						},
+					},
+				},
+			},
+			expect: "string-value-1",
+		},
+		{
+			name: "bool value",
+			feature: &models.Feature{
+				ValueType:        types.FeatureValueTypeBoolean,
+				DefaultVariation: "bool-value-true",
+				Variations: []models.Variation{
+					{
+						Name: "bool-value-true",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeBool: true,
+						},
+					},
+					{
+						Name: "bool-value-false",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeBool: false,
+						},
+					},
+				},
+			},
+			expect: true,
+		},
+		{
+			name: "long value",
+			feature: &models.Feature{
+				ValueType:        types.FeatureValueTypeLong,
+				DefaultVariation: "long-value-1",
+				Variations: []models.Variation{
+					{
+						Name: "long-value-1",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeLong: 1.0,
+						},
+					},
+					{
+						Name: "long-value-2",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeLong: 2.0,
+						},
+					},
+				},
+			},
+			expect: 1.0,
+		},
+		{
+			name: "double value",
+			feature: &models.Feature{
+				ValueType:        types.FeatureValueTypeDouble,
+				DefaultVariation: "double-value-1",
+				Variations: []models.Variation{
+					{
+						Name: "double-value-1",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeDouble: 1.0,
+						},
+					},
+					{
+						Name: "double-value-2",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeDouble: 2.0,
+						},
+					},
+				},
+			},
+			expect: 1.0,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(tt *testing.T) {
+			asst := assert.New(tt)
+			value := c.feature.GetDefaultValue()
+			asst.Equal(c.expect, value, value)
+		})
+	}
+}
