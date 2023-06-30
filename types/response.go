@@ -8,5 +8,3 @@ type EvaluateFeatureResponse struct {
 }
 
 type VariableValue map[VariableValueType]any
-
-type VariableValueType string

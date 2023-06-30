@@ -5,13 +5,13 @@ import (
 )
 
 type Feature struct {
-	DefaultVariation string         `json:"defaultVariation"`
-	EntityOverrides  EntityOverride `json:"entityOverrides"`
-	Name             string         `json:"name"`
-	Project          string         `json:"project"`
-	Status           string         `json:"status"`
-	ValueType        string         `json:"valueType"`
-	Variations       []Variation    `json:"variations"`
+	DefaultVariation string                 `json:"defaultVariation"`
+	EntityOverrides  EntityOverride         `json:"entityOverrides"`
+	Name             string                 `json:"name"`
+	Project          string                 `json:"project"`
+	Status           string                 `json:"status"`
+	ValueType        types.FeatureValueType `json:"valueType"`
+	Variations       []Variation            `json:"variations"`
 }
 
 type EntityOverride map[string]string
@@ -37,10 +37,16 @@ func (f *Feature) GetDefaultValue() any {
 
 func (f *Feature) VariableValueType() types.VariableValueType {
 	switch f.ValueType {
-	case "BOOLEAN":
+	case types.FeatureValueTypeString:
+		return types.VariableValueTypeString
+	case types.FeatureValueTypeBoolean:
 		return types.VariableValueTypeBool
+	case types.FeatureValueTypeLong:
+		return types.VariableValueTypeLong
+	case types.FeatureValueTypeDouble:
+		return types.VariableValueTypeDouble
 	default:
-		// TODO
+		// noop
 	}
 
 	return ""
