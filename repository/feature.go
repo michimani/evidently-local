@@ -75,13 +75,17 @@ func (r *FeatureRepositoryWithJSONFile) Get(project, featureName string) (*model
 }
 
 func (r *FeatureRepositoryWithJSONFile) List(project string) ([]*models.Feature, error) {
+	if r == nil {
+		return nil, errors.New("FeatureRepositoryWithJSONFile is nil")
+	}
+
 	projectDir := filepath.Join(r.dataDir, "projects", project)
 	if _, err := os.Stat(projectDir); err != nil {
 		r.l.Error("project directory not found", err)
 		return nil, fmt.Errorf("Project not found: %s", project)
 	}
 
-	files, err := os.ReadDir(projectDir)
+	files, err := os.ReadDir(filepath.Join(projectDir, "features"))
 	if err != nil {
 		r.l.Error("failed to read project directory", err)
 		return nil, err
@@ -89,7 +93,7 @@ func (r *FeatureRepositoryWithJSONFile) List(project string) ([]*models.Feature,
 
 	res := []*models.Feature{}
 	for _, file := range files {
-		if !file.IsDir() {
+		if !file.IsDir() && file.Name()[len(file.Name())-5:] == ".json" {
 			featureFilePath := filepath.Join(projectDir, "features", file.Name())
 			feature, err := r.getFeatureByFilePath(featureFilePath)
 			if err != nil {

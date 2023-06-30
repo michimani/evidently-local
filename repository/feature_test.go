@@ -12,6 +12,8 @@ import (
 )
 
 func Test_NewFeatureRepositoryWithJSONFile(t *testing.T) {
+	t.Parallel()
+
 	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
 	testRepo := repository.FeatureRepositoryWithJSONFile{}
 	repository.SetDataDirToFeatureRepositoryWithJSONFile(&testRepo, "testdata")
@@ -64,6 +66,8 @@ func Test_NewFeatureRepositoryWithJSONFile(t *testing.T) {
 }
 
 func Test_FeatureRepositoryWithJSONFile_Get(t *testing.T) {
+	t.Parallel()
+
 	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
 	testRepo, _ := repository.NewFeatureRepositoryWithJSONFile("../testdata", testLogger)
 
@@ -171,6 +175,113 @@ func Test_FeatureRepositoryWithJSONFile_Get(t *testing.T) {
 
 			asst.NoError(err)
 			asst.Equal(*c.expect, *got)
+		})
+	}
+}
+
+func Test_FeatureRepositoryWithJSONFile_List(t *testing.T) {
+	t.Parallel()
+
+	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
+	testRepo, _ := repository.NewFeatureRepositoryWithJSONFile("../testdata", testLogger)
+
+	cases := []struct {
+		name    string
+		repo    *repository.FeatureRepositoryWithJSONFile
+		project string
+		wantErr bool
+		expect  []*models.Feature
+	}{
+		{
+			name:    "repo is nil",
+			repo:    nil,
+			project: "test-project",
+			wantErr: true,
+			expect:  nil,
+		},
+		{
+			name:    "project not found",
+			repo:    testRepo,
+			project: "not-exists-project",
+			wantErr: true,
+			expect:  nil,
+		},
+		{
+			name:    "has no feature project",
+			repo:    testRepo,
+			project: "has-no-feature-project",
+			wantErr: false,
+			expect:  []*models.Feature{},
+		},
+		{
+			name:    "success",
+			repo:    testRepo,
+			project: "test-project",
+			wantErr: false,
+			expect: []*models.Feature{
+				{
+					Name:             "test-feature-1",
+					DefaultVariation: "False",
+					EntityOverrides: models.EntityOverride{
+						"force-true": "True",
+					},
+					Project:   "test-project",
+					Status:    "AVAILABLE",
+					ValueType: "BOOLEAN",
+					Variations: []models.Variation{
+						{
+							Name: "True", Value: map[types.VariableValueType]any{
+								types.VariableValueTypeBool: true,
+							},
+						},
+						{
+							Name: "False", Value: map[types.VariableValueType]any{
+								types.VariableValueTypeBool: false,
+							},
+						},
+					},
+				},
+				{
+					Name:             "test-feature-2",
+					DefaultVariation: "String1",
+					EntityOverrides: models.EntityOverride{
+						"force-2": "String2",
+					},
+					Project:   "test-project",
+					Status:    "AVAILABLE",
+					ValueType: "STRING",
+					Variations: []models.Variation{
+						{
+							Name: "String1", Value: map[types.VariableValueType]any{
+								types.VariableValueTypeString: "string-1",
+							},
+						},
+						{
+							Name: "String2", Value: map[types.VariableValueType]any{
+								types.VariableValueTypeString: "string-2",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(tt *testing.T) {
+			asst := assert.New(tt)
+			got, err := c.repo.List(c.project)
+			if c.wantErr {
+				asst.Nil(got)
+				asst.Error(err)
+				return
+			}
+
+			asst.NoError(err)
+			asst.Equal(len(c.expect), len(got))
+			for i, e := range c.expect {
+				asst.Equal(*e, *got[i])
+			}
 		})
 	}
 }
