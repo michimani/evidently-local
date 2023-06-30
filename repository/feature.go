@@ -50,6 +50,10 @@ func NewFeatureRepositoryWithJSONFile(dataDir string, l logger.Logger) (*Feature
 }
 
 func (r *FeatureRepositoryWithJSONFile) Get(project, featureName string) (*models.Feature, error) {
+	if r == nil {
+		return nil, errors.New("FeatureRepositoryWithJSONFile is nil")
+	}
+
 	projectDir := filepath.Join(r.dataDir, "projects", project)
 	if _, err := os.Stat(projectDir); err != nil {
 		r.l.Error("project directory not found", err)
