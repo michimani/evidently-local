@@ -299,3 +299,18 @@ func Test_FeatureRepositoryWithJSONFile_List(t *testing.T) {
 		})
 	}
 }
+
+func Test_SetAndGetFeatureRepositoryInstance(t *testing.T) {
+	t.Parallel()
+
+	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
+	testRepo, _ := repository.NewFeatureRepositoryWithJSONFile("../testdata", testLogger)
+
+	asst := assert.New(t)
+
+	asst.Nil(repository.FeatureRepositoryInstance())
+
+	repository.SetFeatureRepositoryInstance(testRepo)
+	instance := repository.FeatureRepositoryInstance()
+	asst.NotNil(instance)
+}
