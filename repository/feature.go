@@ -87,8 +87,8 @@ func (r *FeatureRepositoryWithJSONFile) List(project string) ([]*models.Feature,
 
 	files, err := os.ReadDir(filepath.Join(projectDir, "features"))
 	if err != nil {
-		r.l.Error("failed to read project directory", err)
-		return nil, err
+		r.l.Warn("failed to read features directory")
+		return []*models.Feature{}, nil
 	}
 
 	res := []*models.Feature{}

@@ -207,9 +207,23 @@ func Test_FeatureRepositoryWithJSONFile_List(t *testing.T) {
 			expect:  nil,
 		},
 		{
+			name:    "has no features directory project",
+			repo:    testRepo,
+			project: "has-no-features-dir-project",
+			wantErr: false,
+			expect:  []*models.Feature{},
+		},
+		{
 			name:    "has no feature project",
 			repo:    testRepo,
 			project: "has-no-feature-project",
+			wantErr: false,
+			expect:  []*models.Feature{},
+		},
+		{
+			name:    "has invalid feature json project",
+			repo:    testRepo,
+			project: "has-invalid-json-project",
 			wantErr: false,
 			expect:  []*models.Feature{},
 		},
