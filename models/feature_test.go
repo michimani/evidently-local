@@ -127,6 +127,28 @@ func Test_Feature_GetValue(t *testing.T) {
 			variation: "not-exists-variation",
 			expect:    nil,
 		},
+		{
+			name: "undefined value type",
+			feature: &models.Feature{
+				ValueType: types.FeatureValueType("undefined"),
+				Variations: []models.Variation{
+					{
+						Name: "string-value-1",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeString: "string-value-1",
+						},
+					},
+					{
+						Name: "string-value-2",
+						Value: map[types.VariableValueType]any{
+							types.VariableValueTypeString: "string-value-2",
+						},
+					},
+				},
+			},
+			variation: "string-value-1",
+			expect:    nil,
+		},
 	}
 
 	for _, c := range cases {
