@@ -14,10 +14,6 @@ import (
 	"github.com/michimani/evidentlylocal/types"
 )
 
-const (
-	dataDir = "data"
-)
-
 func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	if r.Method != http.MethodPost {
 		l.Error("Method not allowed: "+r.Method, nil)
@@ -37,14 +33,7 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	project := parts[2]
 	featureName := parts[4]
 
-	fRepo, err := repository.NewFeatureRepositoryWithJSONFile(dataDir, l)
-	if err != nil {
-		l.Error("Failed to create repository", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	feature, err := fRepo.Get(project, featureName)
+	feature, err := repository.FeatureRepositoryInstance().Get(project, featureName)
 	if err != nil {
 		l.Error("Failed to get feature", err)
 		http.Error(w, "Resource Not Found", http.StatusNotFound)

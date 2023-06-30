@@ -12,6 +12,16 @@ import (
 	"github.com/michimani/evidentlylocal/models"
 )
 
+var featureRepositoryInstance FeatureRepository
+
+func SetFeatureRepositoryInstance(r FeatureRepository) {
+	featureRepositoryInstance = r
+}
+
+func FeatureRepositoryInstance() FeatureRepository {
+	return featureRepositoryInstance
+}
+
 type FeatureRepository interface {
 	Get(project, feature string) (*models.Feature, error)
 	List(project string) ([]*models.Feature, error)

@@ -1,28 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"os"
 
-	"github.com/michimani/evidentlylocal/handler"
 	"github.com/michimani/evidentlylocal/logger"
+	"github.com/michimani/evidentlylocal/repository"
+	"github.com/michimani/evidentlylocal/server"
 )
 
 const (
 	portEnvKey  = "EVIDENTLY_LOCAL_PORT"
 	defaultPort = "2306"
+	dataDir     = "./data"
 )
-
-func startServer(port string, l logger.Logger) {
-	http.HandleFunc("/projects/", handler.Projects)
-
-	l.Info(fmt.Sprintf("Server started on port %s", port))
-	err := http.ListenAndServe(":"+port, nil)
-	if err != nil {
-		panic(err)
-	}
-}
 
 func main() {
 	port := os.Getenv(portEnvKey)
@@ -35,5 +25,10 @@ func main() {
 		panic(err)
 	}
 
-	startServer(port, l)
+	fRepo, err := repository.NewFeatureRepositoryWithJSONFile(dataDir, l)
+	if err != nil {
+		panic(err)
+	}
+
+	server.Start(port, l, fRepo)
 }
