@@ -16,8 +16,8 @@ import (
 
 const (
 	evidentlyEndpointURLKey = "EVIDENTLY_ENDPOINT_URL"
-	project                 = "food"
-	feature                 = "sushi"
+	project                 = "test-project"
+	feature                 = "test-feature-1"
 	region                  = "ap-northeast-1"
 )
 
