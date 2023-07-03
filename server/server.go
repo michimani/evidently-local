@@ -12,7 +12,9 @@ import (
 func Start(port string, l logger.Logger, repoInstance repository.FeatureRepository) {
 	repository.SetFeatureRepositoryInstance(repoInstance)
 
-	http.HandleFunc("/projects/", handler.Projects)
+	ph := handler.NewProjectHandler(l)
+
+	http.HandleFunc("/projects/", ph.Projects)
 
 	l.Info(fmt.Sprintf("Server started on port %s", port))
 	err := http.ListenAndServe(":"+port, nil)

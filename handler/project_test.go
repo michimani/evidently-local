@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/michimani/evidentlylocal/handler"
@@ -16,6 +15,7 @@ import (
 func Test_Project(t *testing.T) {
 	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
 	handler.PrepareForTest(testLogger)
+	ph := handler.NewProjectHandler(testLogger)
 
 	cases := []struct {
 		name           string
@@ -595,7 +595,7 @@ func Test_Project(t *testing.T) {
 
 			w := httptest.NewRecorder()
 
-			handler.Projects(w, req)
+			ph.Projects(w, req)
 
 			asst.Equal(c.expectedStatus, w.Code)
 			asst.Equal(c.expectedBody, w.Body.String())
@@ -841,7 +841,7 @@ func Test_handleSomeResources(t *testing.T) {
 
 			w := httptest.NewRecorder()
 
-			handler.Exported_handleSomeResources(w, req, strings.Split(c.reqPath, "/"), testLogger)
+			handler.Exported_handleSomeResources(w, req)
 
 			asst.Equal(c.expectedStatus, w.Code)
 			asst.Equal(c.expectedBody, w.Body.String())
@@ -1130,7 +1130,7 @@ func Test_handleSpecificResource(t *testing.T) {
 
 			w := httptest.NewRecorder()
 
-			handler.Exported_handleSpecificResource(w, req, strings.Split(c.reqPath, "/"), testLogger)
+			handler.Exported_handleSpecificResource(w, req)
 
 			asst.Equal(c.expectedStatus, w.Code)
 			asst.Equal(c.expectedBody, w.Body.String())

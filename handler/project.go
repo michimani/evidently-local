@@ -3,48 +3,53 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/michimani/evidentlylocal/logger"
 )
 
-func Projects(w http.ResponseWriter, r *http.Request) {
-	l, err := logger.NewEvidentlyLocalLogger(os.Stdout)
-	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
+type ProjectHandler struct {
+	l         logger.Logger
+	pathParts []string
+}
 
+func NewProjectHandler(l logger.Logger) *ProjectHandler {
+	return &ProjectHandler{
+		l: l,
+	}
+}
+
+func (h *ProjectHandler) Projects(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	parts := strings.Split(path, "/")
-	l.Info(fmt.Sprintf("%s %s", r.Method, path))
+	h.pathParts = parts
+	h.l.Info(fmt.Sprintf("%s %s", r.Method, path))
 
 	switch len(parts) {
 	case 2:
 		// GET | POST /projects
-		handleProjects(w, r, l)
+		h.handleProjects(w, r)
 	case 3:
 		// GET | PATCH | DELETE /projects/:project
-		handleSpecificProject(w, r, parts[2], l)
+		h.handleSpecificProject(w, r)
 	case 4:
 		// POST /projects/:project/evaluations
 		// GET | POST /projects/:project/experiments
 		// GET | POST /projects/:project/launches
 		// GET | POST /projects/:project/features
-		handleSomeResources(w, r, parts, l)
+		h.handleSomeResources(w, r)
 	case 5:
 		// POST /projects/:project/evaluations/:feature
 		// GET | PATCH | DELETE /projects/:project/experiments/:experiment
 		// GET | PATCH | DELETE /projects/:project/launches/:launch
 		// GET | PATCH | DELETE /projects/:project/features/:feature
-		handleSpecificResource(w, r, parts, l)
+		h.handleSpecificResource(w, r)
 	default:
 		http.Error(w, "Not found", http.StatusNotFound)
 	}
 }
 
-func handleProjects(w http.ResponseWriter, r *http.Request, l logger.Logger) {
+func (h *ProjectHandler) handleProjects(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet, http.MethodPost:
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
@@ -53,7 +58,7 @@ func handleProjects(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	}
 }
 
-func handleSpecificProject(w http.ResponseWriter, r *http.Request, project string, l logger.Logger) {
+func (h *ProjectHandler) handleSpecificProject(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet, http.MethodPatch, http.MethodDelete:
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
@@ -62,14 +67,14 @@ func handleSpecificProject(w http.ResponseWriter, r *http.Request, project strin
 	}
 }
 
-func handleSomeResources(w http.ResponseWriter, r *http.Request, pathPart []string, l logger.Logger) {
-	if len(pathPart) != 4 {
-		l.Error("Invalid path: "+r.URL.Path, nil)
+func (h *ProjectHandler) handleSomeResources(w http.ResponseWriter, r *http.Request) {
+	if len(h.pathParts) != 4 {
+		h.l.Error("Invalid path: "+r.URL.Path, nil)
 		http.Error(w, "Not found", http.StatusNotFound)
 		return
 	}
 
-	switch pathPart[3] {
+	switch h.pathParts[3] {
 	case "evaluations", "experiments", "launches", "features":
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
 	default:
@@ -77,18 +82,18 @@ func handleSomeResources(w http.ResponseWriter, r *http.Request, pathPart []stri
 	}
 }
 
-func handleSpecificResource(w http.ResponseWriter, r *http.Request, pathPart []string, l logger.Logger) {
-	if len(pathPart) != 5 {
-		l.Error("Invalid path: "+r.URL.Path, nil)
+func (h *ProjectHandler) handleSpecificResource(w http.ResponseWriter, r *http.Request) {
+	if len(h.pathParts) != 5 {
+		h.l.Error("Invalid path: "+r.URL.Path, nil)
 		http.Error(w, "Not found", http.StatusNotFound)
 		return
 	}
 
-	switch pathPart[3] {
+	switch h.pathParts[3] {
 	case "evaluations":
 		// POST /projects/:project/evaluations/:feature
 		// https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_EvaluateFeature.html
-		evaluateFeature(w, r, l)
+		evaluateFeature(w, r, h.l)
 	case "experiments", "launches", "features":
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
 	default:
