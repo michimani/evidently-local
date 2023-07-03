@@ -36,16 +36,15 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	feature, err := repository.FeatureRepositoryInstance().Get(project, featureName)
 	if err != nil {
 		l.Error("Failed to get feature", err)
-		http.Error(w, "Resource Not Found", http.StatusNotFound)
+		http.Error(w, "Not found", http.StatusNotFound)
 		return
 	}
 
-	// TODO: get entityID from request body
 	request := &types.EvaluateFeatureRequest{}
 	err = json.NewDecoder(r.Body).Decode(request)
 	if err != nil {
 		l.Error("Failed to decode request body", err)
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
