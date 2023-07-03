@@ -107,7 +107,7 @@ func Test_EvaluateFeature(t *testing.T) {
 
 			w := httptest.NewRecorder()
 
-			handler.Exported_evaluateFeature(w, req, testLogger)
+			handler.Exported_evaluateFeature(w, req)
 
 			asst.Equal(c.expectedStatus, w.Code)
 			asst.Equal(c.expectedBody, w.Body.String())

@@ -14,9 +14,19 @@ import (
 	"github.com/michimani/evidentlylocal/types"
 )
 
-func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
+type evaluationHandler struct {
+	l logger.Logger
+}
+
+func newEvaluationHandler(l logger.Logger) *evaluationHandler {
+	return &evaluationHandler{
+		l: l,
+	}
+}
+
+func (h *evaluationHandler) evaluateFeature(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		l.Error("Method not allowed: "+r.Method, nil)
+		h.l.Error("Method not allowed: "+r.Method, nil)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -25,7 +35,7 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	parts := strings.Split(path, "/")
 
 	if len(parts) != 5 {
-		l.Error("Invalid path: "+path, nil)
+		h.l.Error("Invalid path: "+path, nil)
 		http.Error(w, "Not found", http.StatusNotFound)
 		return
 	}
@@ -35,7 +45,7 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 
 	feature, err := repository.FeatureRepositoryInstance().Get(project, featureName)
 	if err != nil {
-		l.Error("Failed to get feature", err)
+		h.l.Error("Failed to get feature", err)
 		http.Error(w, "Not found", http.StatusNotFound)
 		return
 	}
@@ -43,7 +53,7 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	request := &types.EvaluateFeatureRequest{}
 	err = json.NewDecoder(r.Body).Decode(request)
 	if err != nil {
-		l.Error("Failed to decode request body", err)
+		h.l.Error("Failed to decode request body", err)
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
@@ -52,12 +62,12 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 
 	reason, variation, err := components.EvaluateFeature(feature, entityID)
 	if err != nil {
-		l.Error("Failed to evaluate feature", err)
+		h.l.Error("Failed to evaluate feature", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	l.Info(fmt.Sprintf("return variation: %+v", variation))
+	h.l.Info(fmt.Sprintf("return variation: %+v", variation))
 
 	res := types.EvaluateFeatureResponse{
 		Details:   "{}",
@@ -75,7 +85,7 @@ func evaluateFeature(w http.ResponseWriter, r *http.Request, l logger.Logger) {
 	requestID := ""
 	uuid, err := uuid.NewV4()
 	if err != nil {
-		l.Error("Failed to generate UUID. Use constant request id.", err)
+		h.l.Error("Failed to generate UUID. Use constant request id.", err)
 		requestID = "xxxxxxxx-0000-0000-0000-xxxxxxxxxxxx"
 	} else {
 		requestID = uuid.String()
