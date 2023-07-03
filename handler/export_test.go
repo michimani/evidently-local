@@ -6,7 +6,9 @@ import (
 )
 
 var (
-	Exported_evaluateFeature = evaluateFeature
+	Exported_evaluateFeature        = evaluateFeature
+	Exported_handleSomeResources    = handleSomeResources
+	Exported_handleSpecificResource = handleSpecificResource
 )
 
 const (
