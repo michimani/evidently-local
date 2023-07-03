@@ -88,6 +88,14 @@ func Test_EvaluateFeature(t *testing.T) {
 			expectedStatus: http.StatusMethodNotAllowed,
 			expectedBody:   "Method not allowed\n",
 		},
+		{
+			name:           "invalid request path",
+			reqBody:        `///`,
+			reqPath:        "/projects/test-project",
+			method:         http.MethodPost,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
 	}
 
 	for _, c := range cases {

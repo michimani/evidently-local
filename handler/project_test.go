@@ -24,6 +24,49 @@ func Test_Project(t *testing.T) {
 		expectedStatus int
 		expectedBody   string
 	}{
+		// invalid path
+		{
+			name:           "GET /projects/invalid/path/invalid/path/invalid/path",
+			reqPath:        "/projects/invalid/path/invalid/path/invalid/path",
+			method:         http.MethodGet,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "POST /projects/invalid/path/invalid/path/invalid/path",
+			reqPath:        "/projects/invalid/path/invalid/path/invalid/path",
+			method:         http.MethodPost,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "DELETE /projects/invalid/path/invalid/path/invalid/path",
+			reqPath:        "/projects/invalid/path/invalid/path/invalid/path",
+			method:         http.MethodDelete,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "PUT /projects/invalid/path/invalid/path/invalid/path",
+			reqPath:        "/projects/invalid/path/invalid/path/invalid/path",
+			method:         http.MethodPut,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "PATCH /projects/invalid/path/invalid/path/invalid/path",
+			reqPath:        "/projects/invalid/path/invalid/path/invalid/path",
+			method:         http.MethodPatch,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "HEAD /projects/invalid/path/invalid/path/invalid/path",
+			reqPath:        "/projects/invalid/path/invalid/path/invalid/path",
+			method:         http.MethodHead,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
 		// /projects
 		{
 			name:           "GET /projects",
@@ -496,6 +539,49 @@ func Test_Project(t *testing.T) {
 			method:         http.MethodHead,
 			expectedStatus: http.StatusNotImplemented,
 			expectedBody:   "Not implemented\n",
+		},
+		// /projects/:project/invalid-resource/:feature
+		{
+			name:           "GET /projects/:project/invalid-resource/:feature",
+			reqPath:        "/projects/test-project/invalid-resource/test-feature-1",
+			method:         http.MethodGet,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "POST /projects/:project/invalid-resource/:feature",
+			reqPath:        "/projects/test-project/invalid-resource/test-feature-1",
+			method:         http.MethodPost,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "DELETE /projects/:project/invalid-resource/:feature",
+			reqPath:        "/projects/test-project/invalid-resource/test-feature-1",
+			method:         http.MethodDelete,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "PUT /projects/:project/invalid-resource/:feature",
+			reqPath:        "/projects/test-project/invalid-resource/test-feature-1",
+			method:         http.MethodPut,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "PATCH /projects/:project/invalid-resource/:feature",
+			reqPath:        "/projects/test-project/invalid-resource/test-feature-1",
+			method:         http.MethodPatch,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
+		},
+		{
+			name:           "HEAD /projects/:project/invalid-resource/:feature",
+			reqPath:        "/projects/test-project/invalid-resource/test-feature-1",
+			method:         http.MethodHead,
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Not found\n",
 		},
 	}
 
