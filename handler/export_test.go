@@ -9,10 +9,6 @@ import (
 	"github.com/michimani/evidentlylocal/repository"
 )
 
-var (
-	Exported_evaluateFeature = evaluateFeature
-)
-
 const (
 	dataDir = "../testdata"
 )
@@ -38,4 +34,10 @@ func Exported_handleSpecificResource(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(path, "/")
 	ph.pathParts = parts
 	ph.handleSpecificResource(w, r)
+}
+
+func Exported_evaluateFeature(w http.ResponseWriter, r *http.Request) {
+	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
+	eh := newEvaluationHandler(testLogger)
+	eh.evaluateFeature(w, r)
 }

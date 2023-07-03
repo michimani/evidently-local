@@ -93,7 +93,8 @@ func (h *ProjectHandler) handleSpecificResource(w http.ResponseWriter, r *http.R
 	case "evaluations":
 		// POST /projects/:project/evaluations/:feature
 		// https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_EvaluateFeature.html
-		evaluateFeature(w, r, h.l)
+		eh := newEvaluationHandler(h.l)
+		eh.evaluateFeature(w, r)
 	case "experiments", "launches", "features":
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
 	default:
