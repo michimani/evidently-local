@@ -30,7 +30,7 @@ func Test_EvaluateFeature(t *testing.T) {
 			reqPath:        "/projects/test-project/evaluations/test-feature-1",
 			method:         http.MethodPost,
 			expectedStatus: http.StatusOK,
-			expectedBody:   `{"details":"{}","reason":"DEFAULT (local)","value":{"boolValue":false},"variation":"False"}`,
+			expectedBody:   `{"details":"{}","reason":"DEFAULT","value":{"boolValue":false},"variation":"False"}`,
 		},
 		{
 			name:           "override rule",
@@ -38,7 +38,7 @@ func Test_EvaluateFeature(t *testing.T) {
 			reqPath:        "/projects/test-project/evaluations/test-feature-1",
 			method:         http.MethodPost,
 			expectedStatus: http.StatusOK,
-			expectedBody:   `{"details":"{}","reason":"OVERRIDE_RULE (local)","value":{"boolValue":true},"variation":"True"}`,
+			expectedBody:   `{"details":"{}","reason":"OVERRIDE_RULE","value":{"boolValue":true},"variation":"True"}`,
 		},
 		{
 			name:           "feature not found",
