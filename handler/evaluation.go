@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/gofrs/uuid"
 
@@ -74,6 +75,106 @@ func (h *evaluationHandler) evaluateFeature(w http.ResponseWriter, r *http.Reque
 		Reason:    reason,
 		Value:     variation.Value,
 		Variation: variation.Name,
+	}
+
+	bytes, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	requestID := ""
+	uuid, err := uuid.NewV4()
+	if err != nil {
+		h.l.Error("Failed to generate UUID. Use constant request id.", err)
+		requestID = "xxxxxxxx-0000-0000-0000-xxxxxxxxxxxx"
+	} else {
+		requestID = uuid.String()
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("x-amzn-RequestId", requestID)
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(bytes)
+}
+
+func (h *evaluationHandler) batchEvaluateFeature(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		h.l.Error("Method not allowed: "+r.Method, nil)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := r.URL.Path
+	parts := strings.Split(path, "/")
+
+	if len(parts) != 4 {
+		h.l.Error("Invalid path: "+path, nil)
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	project := parts[2]
+
+	request := &types.BatchEvaluateFeatureRequest{}
+	err := json.NewDecoder(r.Body).Decode(request)
+	if err != nil {
+		h.l.Error("Failed to decode request body", err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	results := make([]types.EvaluationResult, len(request.Requests))
+
+	wg := sync.WaitGroup{}
+	for i, req := range request.Requests {
+		wg.Add(1)
+
+		go func(i int, req types.EvaluationRequest) {
+			defer wg.Done()
+			feature, err := repository.FeatureRepositoryInstance().Get(project, req.Feature)
+			if err != nil {
+				h.l.Error("Failed to get feature", err)
+				results[i] = types.EvaluationResult{
+					EntityID: req.EntityID,
+					Feature:  req.Feature,
+					Project:  project,
+					Reason:   "Feature not found",
+				}
+				return
+			}
+
+			reason, variation, err := components.EvaluateFeature(feature, req.EntityID)
+			if err != nil {
+				h.l.Error("Failed to evaluate feature", err)
+				http.Error(w, "Internal server error", http.StatusInternalServerError)
+				results[i] = types.EvaluationResult{
+					EntityID: req.EntityID,
+					Feature:  req.Feature,
+					Project:  project,
+					Reason:   "Failed to evaluate feature",
+				}
+				return
+			}
+
+			res := types.EvaluationResult{
+				Details:   "{}",
+				EntityID:  req.EntityID,
+				Feature:   req.Feature,
+				Project:   project,
+				Reason:    reason,
+				Value:     variation.Value,
+				Variation: variation.Name,
+			}
+
+			results[i] = res
+		}(i, req)
+	}
+
+	wg.Wait()
+
+	res := types.BatchEvaluateFeatureResponse{
+		Results: results,
 	}
 
 	bytes, err := json.Marshal(res)
