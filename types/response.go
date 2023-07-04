@@ -8,3 +8,17 @@ type EvaluateFeatureResponse struct {
 }
 
 type VariableValue map[VariableValueType]any
+
+type BatchEvaluateFeatureResponse struct {
+	Results []EvaluationResult `json:"results"`
+}
+
+type EvaluationResult struct {
+	Details   string        `json:"details"`
+	EntityID  string        `json:"entityId"`
+	Feature   string        `json:"feature"`
+	Project   string        `json:"project"`
+	Reason    string        `json:"reason"`
+	Variation string        `json:"variation"`
+	Value     VariableValue `json:"value"`
+}
