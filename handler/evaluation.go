@@ -7,9 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gofrs/uuid"
-
 	"github.com/michimani/evidentlylocal/components"
+	"github.com/michimani/evidentlylocal/internal"
 	"github.com/michimani/evidentlylocal/logger"
 	"github.com/michimani/evidentlylocal/repository"
 	"github.com/michimani/evidentlylocal/types"
@@ -77,19 +76,11 @@ func (h *evaluationHandler) evaluateFeature(w http.ResponseWriter, r *http.Reque
 		Variation: variation.Name,
 	}
 
-	bytes, err := json.Marshal(res)
+	bytes, requestID, err := internal.GenerateResponseBody(res)
 	if err != nil {
+		h.l.Error("Failed to generate response body", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
-	}
-
-	requestID := ""
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		h.l.Error("Failed to generate UUID. Use constant request id.", err)
-		requestID = "xxxxxxxx-0000-0000-0000-xxxxxxxxxxxx"
-	} else {
-		requestID = uuid.String()
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -177,19 +168,11 @@ func (h *evaluationHandler) batchEvaluateFeature(w http.ResponseWriter, r *http.
 		Results: results,
 	}
 
-	bytes, err := json.Marshal(res)
+	bytes, requestID, err := internal.GenerateResponseBody(res)
 	if err != nil {
+		h.l.Error("Failed to generate response body", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
-	}
-
-	requestID := ""
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		h.l.Error("Failed to generate UUID. Use constant request id.", err)
-		requestID = "xxxxxxxx-0000-0000-0000-xxxxxxxxxxxx"
-	} else {
-		requestID = uuid.String()
 	}
 
 	w.Header().Set("Content-Type", "application/json")
