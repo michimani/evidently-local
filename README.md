@@ -9,7 +9,10 @@ This is a simple http server to manage feature flags, compatible with Amazon Clo
 
 [Actions - CloudWatch Evidently](https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_Operations.html)
 
-- EvaluateFeature
+- [EvaluateFeature](https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_EvaluateFeature.html)
+  - Only support evaluation with default variation and override rules.
+  - TODO: Evaluation with some launches.
+- [BatchEvaluateFeature](https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_BatchEvaluateFeature.html)
   - Only support evaluation with default variation and override rules.
   - TODO: Evaluation with some launches.
 
@@ -83,7 +86,7 @@ FROM golang:1.20-alpine3.18 AS builder
 
 WORKDIR /app
 
-ADD https://github.com/michimani/evidently-local/archive/refs/tags/v0.0.2.zip ./
+ADD https://github.com/michimani/evidently-local/archive/refs/tags/v0.0.3.zip ./
 
 RUN unzip v0.0.2.zip \
   && cd evidently-local-0.0.2 \

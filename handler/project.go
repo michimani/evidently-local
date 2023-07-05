@@ -75,7 +75,12 @@ func (h *ProjectHandler) handleSomeResources(w http.ResponseWriter, r *http.Requ
 	}
 
 	switch h.pathParts[3] {
-	case "evaluations", "experiments", "launches", "features":
+	case "evaluations":
+		// POST /projects/:project/evaluations/
+		// https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_BatchEvaluateFeature.html
+		eh := newEvaluationHandler(h.l)
+		eh.batchEvaluateFeature(w, r)
+	case "experiments", "launches", "features":
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
 	default:
 		http.Error(w, "Not found", http.StatusNotFound)

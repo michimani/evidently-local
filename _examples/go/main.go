@@ -39,7 +39,8 @@ func main() {
 		entityID = args[1]
 	}
 
-	evaluateFeature(client, project, feature, entityID)
+	// evaluateFeature(client, project, feature, entityID)
+	batchEvaluateFeature(client, project, entityID)
 }
 
 func evaluateFeature(client *evidently.Client, project, feature, entityID string) {
@@ -73,6 +74,58 @@ func evaluateFeature(client *evidently.Client, project, feature, entityID string
 	}
 
 	fmt.Printf("Value: %+v\n", value)
+}
+
+func batchEvaluateFeature(client *evidently.Client, project, entityID string) {
+	out, err := client.BatchEvaluateFeature(context.Background(), &evidently.BatchEvaluateFeatureInput{
+		Project: aws.String(project),
+		Requests: []types.EvaluationRequest{
+			{
+				EntityId: &entityID,
+				Feature:  aws.String("test-feature-1"),
+			},
+			{
+				EntityId: &entityID,
+				Feature:  aws.String("test-feature-2"),
+			},
+			{
+				EntityId: &entityID,
+				Feature:  aws.String("test-feature-not-exists"),
+			},
+		},
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	for i, r := range out.Results {
+		fmt.Printf("------ Result: %d ------\n", i)
+		fmt.Printf("EntityID: %s\n", entityID)
+		fmt.Printf("Reason: %s\n", aws.ToString(r.Reason))
+		fmt.Printf("Variation: %s\n", aws.ToString(r.Variation))
+		fmt.Printf("Type of Value: %s\n", reflect.TypeOf(r.Value))
+
+		if r.Value == nil {
+			continue
+		}
+
+		var value any
+		switch r.Value.(type) {
+		case *types.VariableValueMemberStringValue:
+			value = r.Value.(*types.VariableValueMemberStringValue).Value
+		case *types.VariableValueMemberBoolValue:
+			value = r.Value.(*types.VariableValueMemberBoolValue).Value
+		case *types.VariableValueMemberLongValue:
+			value = r.Value.(*types.VariableValueMemberLongValue).Value
+		case *types.VariableValueMemberDoubleValue:
+			value = r.Value.(*types.VariableValueMemberDoubleValue).Value
+		default:
+			// noop
+		}
+
+		fmt.Printf("Value: %+v\n", value)
+	}
 }
 
 func createEvidentlyClient() (*evidently.Client, error) {
