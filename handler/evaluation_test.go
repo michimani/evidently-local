@@ -2,9 +2,9 @@ package handler_test
 
 import (
 	"bytes"
+	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/michimani/evidentlylocal/handler"
@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_EvaluateFeature(t *testing.T) {
-	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
+func Test_evaluateFeature(t *testing.T) {
+	testLogger, _ := logger.NewEvidentlyLocalLogger(io.Discard)
 	handler.PrepareForTest(testLogger)
 
 	cases := []struct {

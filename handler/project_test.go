@@ -2,9 +2,9 @@ package handler_test
 
 import (
 	"bytes"
+	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/michimani/evidentlylocal/handler"
@@ -13,7 +13,7 @@ import (
 )
 
 func Test_Project(t *testing.T) {
-	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
+	testLogger, _ := logger.NewEvidentlyLocalLogger(io.Discard)
 	handler.PrepareForTest(testLogger)
 	ph := handler.NewProjectHandler(testLogger)
 
@@ -604,7 +604,7 @@ func Test_Project(t *testing.T) {
 }
 
 func Test_handleSomeResources(t *testing.T) {
-	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
+	testLogger, _ := logger.NewEvidentlyLocalLogger(io.Discard)
 	handler.PrepareForTest(testLogger)
 
 	cases := []struct {
@@ -850,7 +850,7 @@ func Test_handleSomeResources(t *testing.T) {
 }
 
 func Test_handleSpecificResource(t *testing.T) {
-	testLogger, _ := logger.NewEvidentlyLocalLogger(os.Stdout)
+	testLogger, _ := logger.NewEvidentlyLocalLogger(io.Discard)
 	handler.PrepareForTest(testLogger)
 
 	cases := []struct {
