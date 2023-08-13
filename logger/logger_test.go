@@ -56,7 +56,7 @@ func Test_ELLogger_Info(t *testing.T) {
 		{
 			name:   "success",
 			msg:    "test",
-			expect: `"message":"test"`,
+			expect: `"msg":"test"`,
 		},
 		{
 			name:   "success: empty message",
@@ -80,7 +80,7 @@ func Test_ELLogger_Info(t *testing.T) {
 
 			l.Info(c.msg)
 
-			asst.Contains(out.String(), `"level":"info"`, out.String())
+			asst.Contains(out.String(), `"level":"INFO"`, out.String())
 			asst.Contains(out.String(), c.expect, out.String())
 		})
 	}
@@ -95,7 +95,7 @@ func Test_ELLogger_Warn(t *testing.T) {
 		{
 			name:   "success",
 			msg:    "test",
-			expect: `"message":"test"`,
+			expect: `"msg":"test"`,
 		},
 		{
 			name:   "success: empty message",
@@ -119,7 +119,7 @@ func Test_ELLogger_Warn(t *testing.T) {
 
 			l.Warn(c.msg)
 
-			asst.Contains(out.String(), `"level":"warn"`, out.String())
+			asst.Contains(out.String(), `"level":"WARN"`, out.String())
 			asst.Contains(out.String(), c.expect, out.String())
 		})
 	}
@@ -135,7 +135,7 @@ func Test_ELLogger_Error(t *testing.T) {
 		{
 			name:    "success",
 			msg:     "test",
-			expects: []string{`"message":"test"`},
+			expects: []string{`"msg":"test"`},
 		},
 		{
 			name:    "success: empty message",
@@ -146,7 +146,7 @@ func Test_ELLogger_Error(t *testing.T) {
 			name:    "success with error",
 			msg:     "test",
 			err:     errors.New("test error"),
-			expects: []string{`"message":"test"`, `"error":"test error"`},
+			expects: []string{`"msg":"test"`, `"error":"test error"`},
 		},
 	}
 
@@ -165,7 +165,7 @@ func Test_ELLogger_Error(t *testing.T) {
 
 			l.Error(c.msg, c.err)
 
-			asst.Contains(out.String(), `"level":"error"`, out.String())
+			asst.Contains(out.String(), `"level":"ERROR"`, out.String())
 			for _, expect := range c.expects {
 				asst.Contains(out.String(), expect, out.String())
 			}
