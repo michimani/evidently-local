@@ -3,8 +3,7 @@ package logger
 import (
 	"errors"
 	"io"
-
-	"github.com/rs/zerolog"
+	"log/slog"
 )
 
 type Logger interface {
@@ -14,7 +13,7 @@ type Logger interface {
 }
 
 type ELLogger struct {
-	logger *zerolog.Logger
+	logger *slog.Logger
 }
 
 var _ Logger = (*ELLogger)(nil)
@@ -26,18 +25,27 @@ func NewEvidentlyLocalLogger(out io.Writer) (*ELLogger, error) {
 		return nil, errors.New("out is nil")
 	}
 
-	logger := zerolog.New(out).With().Timestamp().Str("service", serviceName).Logger()
-	return &ELLogger{logger: &logger}, nil
+	handler := slog.NewJSONHandler(out, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+
+	logger := slog.New(handler)
+
+	return &ELLogger{logger: logger}, nil
 }
 
 func (l *ELLogger) Info(msg string) {
-	l.logger.Info().Msg(msg)
+	l.logger.Info(msg)
 }
 
 func (l *ELLogger) Error(msg string, err error) {
-	l.logger.Error().Err(err).Msg(msg)
+	if err == nil {
+		l.logger.Error(msg)
+		return
+	}
+	l.logger.Error(msg, slog.String("error", err.Error()))
 }
 
 func (l *ELLogger) Warn(msg string) {
-	l.logger.Warn().Msg(msg)
+	l.logger.Warn(msg)
 }
