@@ -82,14 +82,14 @@ aws evidently get-feature \
 Second, create a `Dockerfile` to run Evidently-Local server. The following is an example of `Dockerfile`.
 
 ```dockerfile
-FROM golang:1.20-alpine3.18 AS builder
+FROM golang:1.21-alpine3.18 AS builder
 
 WORKDIR /app
 
-ADD https://github.com/michimani/evidently-local/archive/refs/tags/v0.0.3.zip ./
+ADD https://github.com/michimani/evidently-local/archive/refs/tags/v0.0.4.zip ./
 
-RUN unzip v0.0.2.zip \
-  && cd evidently-local-0.0.2 \
+RUN unzip v0.0.4.zip \
+  && cd evidently-local-0.0.4 \
   && go install \
   && go build -o evidently-local . \
   && mv evidently-local /app
